@@ -30,6 +30,7 @@ L1:
     ADD AL, AH
     ADD AL, -48
 
+    ASSUME DS:DSEG2
     MOV BX, DSEG2
     MOV DS, BX
 
