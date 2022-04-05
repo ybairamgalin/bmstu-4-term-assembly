@@ -1,7 +1,7 @@
 public INPUT_NUM
 
 dseg segment para public 'DATA'
-    typeMsg db "Please input number less than 256: $"
+    typeMsg db "Please input number: $"
     number  db 2h dup(0)
 dseg ends
 
