@@ -4,28 +4,30 @@
 .p2align	    4, 0x90                                 # alignment
 
 _mystrncpy:
-        pushq   %rbp                   # save bp
-        movq    %rsp, %rbp             #
-        movq    %rdi, -8(%rbp)
-        movq    %rsi, -16(%rbp)
-        movq    %rdx, -24(%rbp)
-        movq    $0, -32(%rbp)
-.LBB0_1:
-        movq    -32(%rbp), %rax
-        cmpq    -24(%rbp), %rax
-        jae     .LBB0_4
-        movq    -16(%rbp), %rax
-        movq    -32(%rbp), %rcx
-        movb    (%rax,%rcx), %dl
-        movq    -8(%rbp), %rax
-        movq    -32(%rbp), %rcx
-        movb    %dl, (%rax,%rcx)
-        movq    -32(%rbp), %rax
-        addq    $1, %rax
-        movq    %rax, -32(%rbp)
-        jmp     .LBB0_1
-.LBB0_4:
-        movq    -8(%rbp), %rax
+        pushq   %rbp                   # save rbp
+        movq    %rsp, %rbp             # rsp -> rbp
+
+        cmp     %rdi, %rdi             # dest < src
+        jbe     .COPY
+
+        movq    %rdi, %rax
+        subq    %rsi, %rax
+        cmp     %rax, %rdx             # dest < src && dest - src > lng
+        ja      .COPY
+
+        addq    %rcx, %rdi
+        subq    $1, %rdi
+        addq    %rcx, %rsi
+        subq    $1, %rsi
+
+        std                            # set df flag
+.COPY:
+        movq    %rdx, %rcx
+        rep     movsb
+        movb    $0, (%rdi, %rcx)
+
+.END:
+        movq    %rdi, %rax
         popq    %rbp
+        cld
         retq
-retq
