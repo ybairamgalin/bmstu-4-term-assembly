@@ -28,6 +28,6 @@ _mystrncpy:
 
 .END:
         movq    %rdi, %rax
-        popq    %rbp
         cld
+        popq    %rbp
         retq

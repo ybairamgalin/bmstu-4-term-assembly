@@ -10,14 +10,27 @@ template<typename T>
 inline T asmAdder(const T a, const T b)
 {
     T res;
-            __asm__("fld %1\n"
-                    "fld %2\n"
-                    "faddp\n"
-                    "fstp %0\n"
-                    : "=m"(res)
-                    : "m"(a),
-                    "m"(b)
-            );
+
+
+#ifndef OSX
+    __asm__("fld %1\n"
+            "fld %2\n"
+            "faddp\n"
+            "fstp %0\n"
+            : "=m"(res)
+            : "m"(a),
+            "m"(b)
+    );
+#else
+    __asm__("fldl %1\n"
+            "fldl %2\n"
+            "faddp\n"
+            "fstpl %0\n"
+            : "=m"(res)
+            : "m"(a),
+            "m"(b)
+    );
+#endif
 
     return res;
 }
@@ -26,14 +39,25 @@ template<typename T>
 inline T asmMul(const T a, const T b)
 {
     T res;
+#ifndef OSX
     __asm__("fld %1\n"
             "fld %2\n"
             "fmulp\n"
             "fstp %0\n"
-    : "=m"(res)
-    : "m"(a),
-    "m"(b)
+        : "=m"(res)
+        : "m"(a),
+        "m"(b)
     );
+#else
+    __asm__("fldl %1\n"
+            "fldl %2\n"
+            "fmulp\n"
+            "fstpl %0\n"
+        : "=m"(res)
+        : "m"(a),
+        "m"(b)
+    );
+#endif
 
     return res;
 }
@@ -80,10 +104,10 @@ void timeAdd()
     timeIt(adder<long double>, 100.4134L, 3372036854775807.123L);
 #endif // SSE
 
-#ifdef FPU
-    cout << "F 80\t";
-    timeIt(adder<__float80>, 100.4134L, 3372036854775807.123L);
-#endif // FPU
+//#ifdef FPU
+//    cout << "F 80\t";
+//    timeIt(adder<__float80>, 100.4134L, 3372036854775807.123L);
+//#endif // FPU
 
 #endif // ASM
 
@@ -112,10 +136,12 @@ void timeMul()
     timeIt(mul<long double>, 100.4134L, 3372036854775807.123L);
 #endif // SSE
 
+#ifndef OSX
 #ifdef FPU
     cout << "F 80\t";
     timeIt(mul<__float80>, 100.4134L, 3372036854775807.123L);
 #endif // FPU
+#endif // OSX
 
 #endif // ASM
 
