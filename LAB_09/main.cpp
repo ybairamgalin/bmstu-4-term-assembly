@@ -104,10 +104,12 @@ void timeAdd()
     timeIt(adder<long double>, 100.4134L, 3372036854775807.123L);
 #endif // SSE
 
-//#ifdef FPU
-//    cout << "F 80\t";
-//    timeIt(adder<__float80>, 100.4134L, 3372036854775807.123L);
-//#endif // FPU
+#ifndef OSX
+#ifdef FPU
+    cout << "F 80\t";
+    timeIt(adder<__float80>, 100.4134L, 3372036854775807.123L);
+#endif // FPU
+#endif // OSX
 
 #endif // ASM
 
