@@ -2,11 +2,15 @@
 all: sse_main.exe fpu_main.exe asm_main.exe
 
 run:
+	@echo -------SSE-------
 	./sse_main.exe
+	@echo -------FPU-------
 	./fpu_main.exe
+	@echo -------ASM-------
 	./asm_main.exe
 
 sse_main.exe: main.cpp
+	@echo -------SSE-------
 	g++ main.cpp -O0 -DSSE -mno-80387 -o sse_main.exe
 
 fpu_main.exe: main.cpp

@@ -7,7 +7,7 @@ using namespace std;
 
 
 template<typename T>
-T asmAdder(const T a, const T b)
+inline T asmAdder(const T a, const T b)
 {
     T res;
             __asm__("fld %1\n"
@@ -23,7 +23,29 @@ T asmAdder(const T a, const T b)
 }
 
 template<typename T>
-T adder(const T first, const T second)
+inline T asmMul(const T a, const T b)
+{
+    T res;
+    __asm__("fld %1\n"
+            "fld %2\n"
+            "fmulp\n"
+            "fstp %0\n"
+    : "=m"(res)
+    : "m"(a),
+    "m"(b)
+    );
+
+    return res;
+}
+
+template<typename T>
+inline T mul(const T first, const T second)
+{
+    return first * second;
+}
+
+template<typename T>
+inline T adder(const T first, const T second)
 {
     return first + second;
 }
@@ -44,9 +66,8 @@ void timeIt(T (*add)(const T, const T),
     cout << "TIME TAKEN: " << taken << endl;
 }
 
-int main(void)
+void timeAdd()
 {
-
 #ifndef ASM
     cout << "C ADDITION\n";
     cout << "FLOAT\t";
@@ -75,6 +96,44 @@ int main(void)
     cout << "LDOUBLE\t";
     timeIt(asmAdder<long double>, 100.4134L, 3372036875807.123L);
 #endif // ASM
+}
+
+void timeMul()
+{
+#ifndef ASM
+    cout << "C MUL\n";
+    cout << "FLOAT\t";
+    timeIt(mul<float>, float(100.12), float(20000.432));
+    cout << "DOUBLE\t";
+    timeIt(mul<double>, 100.312, 3372036854775.807);
+
+#ifndef SSE
+    cout << "LDOUBLE\t";
+    timeIt(mul<long double>, 100.4134L, 3372036854775807.123L);
+#endif // SSE
+
+#ifdef FPU
+    cout << "F 80\t";
+    timeIt(mul<__float80>, 100.4134L, 3372036854775807.123L);
+#endif // FPU
+
+#endif // ASM
+
+#ifdef ASM
+    cout << "INLINE ASM MUL\n";
+    cout << "FLOAT\t";
+    timeIt(asmMul<float>, float(100.3213), float(20000));
+    cout << "DOUBLE\t";
+    timeIt(asmMul<double>, 100.124124, 33726854775807.3);
+    cout << "LDOUBLE\t";
+    timeIt(asmMul<long double>, 100.4134L, 3372036875807.123L);
+#endif // ASM
+}
+
+int main(void)
+{
+    timeAdd();
+    timeMul();
 
     return EXIT_SUCCESS;
 }
